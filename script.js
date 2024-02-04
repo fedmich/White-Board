@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const context = canvas.getContext('2d');
     let drawing = false;
     let currentColor = 'black';
+    let strokeWidth = 3; // Default stroke width
   
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
@@ -20,28 +21,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   
     function draw(e) {
-        if (!drawing) return;
-      
-        const { offsetX, offsetY } = getPosition(e);
-      
-        context.strokeStyle = currentColor;
-        context.fillStyle = currentColor;
-        // context.lineWidth = 3;
-        // context.lineWidth = 5;
-        context.lineWidth = 3;
-        context.lineCap = 'round';
-      
-        context.lineTo(offsetX, offsetY);
-        context.stroke();
-        context.beginPath();
-        context.arc(offsetX, offsetY, 1.5, 0, Math.PI * 2);
-        context.fill();
-        context.beginPath();
-        context.moveTo(offsetX, offsetY);
-      }
-
-      
-
+      if (!drawing) return;
+  
+      const { offsetX, offsetY } = getPosition(e);
+  
+      context.strokeStyle = currentColor;
+      context.fillStyle = currentColor;
+      context.lineWidth = strokeWidth;
+      context.lineCap = 'round';
+  
+      context.lineTo(offsetX, offsetY);
+      context.stroke();
+      context.beginPath();
+      context.arc(offsetX, offsetY, strokeWidth / 2, 0, Math.PI * 2);
+      context.fill();
+      context.beginPath();
+      context.moveTo(offsetX, offsetY);
+    }
+  
     function getPosition(e) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -96,6 +93,33 @@ document.addEventListener('DOMContentLoaded', function () {
     function clearCanvas() {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
+  
+    // Dropdown functionality for stroke width
+    const dropdown = document.querySelector('.dropdown');
+    const dropdownContent = document.querySelector('.dropdown-content');
+  
+    dropdown.addEventListener('click', function () {
+      dropdownContent.classList.toggle('show');
+    });
+  
+    dropdownContent.addEventListener('click', function (e) {
+      if (e.target.classList.contains('stroke-width')) {
+        strokeWidth = parseInt(e.target.getAttribute('data-width'));
+        dropdownContent.classList.remove('show');
+      }
+    });
+  
+    window.addEventListener('click', function (e) {
+      if (!e.target.matches('.dropbtn')) {
+        const dropdowns = document.getElementsByClassName('dropdown-content');
+        for (let i = 0; i < dropdowns.length; i++) {
+          const openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    });
   
     function saveCanvas() {
       const timestamp = new Date();

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const canvas = document.getElementById('whiteboard');
     const context = canvas.getContext('2d');
     let drawing = false;
+    let stickerMode = false;
     let currentColor = 'black';
     let strokeWidth = 3; // Default stroke width
   
@@ -10,9 +11,17 @@ document.addEventListener('DOMContentLoaded', function () {
     canvas.addEventListener('mousemove', draw);
   
     function startDrawing(e) {
-      drawing = true;
-      setPosition(e);
-      draw(e);
+      if (stickerMode) {
+        const { offsetX, offsetY } = getPosition(e);
+        const sticker = document.querySelector('.selected-sticker');
+        if (sticker) {
+          drawSticker(sticker.getAttribute('data-sticker'), offsetX, offsetY);
+        }
+      } else {
+        drawing = true;
+        setPosition(e);
+        draw(e);
+      }
     }
   
     function stopDrawing() {
@@ -61,8 +70,36 @@ document.addEventListener('DOMContentLoaded', function () {
     colorButtons.forEach(button => {
       button.addEventListener('click', function () {
         currentColor = button.style.backgroundColor;
+        stickerMode = false; // Switch back to pen mode when a color is selected
+        removeSelectedStickerClass();
       });
     });
+  
+    // Sticker functionality
+    const stickerButtons = document.querySelectorAll('.sticker');
+    stickerButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        setStickerMode(button);
+      });
+    });
+  
+    function setStickerMode(button) {
+      stickerMode = true;
+      removeSelectedStickerClass();
+      button.classList.add('selected-sticker');
+    }
+  
+    function removeSelectedStickerClass() {
+      const selectedSticker = document.querySelector('.selected-sticker');
+      if (selectedSticker) {
+        selectedSticker.classList.remove('selected-sticker');
+      }
+    }
+  
+    function drawSticker(sticker, x, y) {
+      context.font = `${strokeWidth * 10}px Arial`;
+      context.fillText(sticker, x, y);
+    }
   
     // Save button functionality
     const saveButton = document.getElementById('saveButton');

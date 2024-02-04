@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         context.fillStyle = currentColor;
         // context.lineWidth = 3;
         // context.lineWidth = 5;
-        context.lineWidth = 1;
+        context.lineWidth = 3;
         context.lineCap = 'round';
       
         context.lineTo(offsetX, offsetY);
